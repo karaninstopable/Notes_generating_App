@@ -5,6 +5,7 @@ import axios from 'axios';
 // Fallback: uses relative /api (works if frontend & backend are on same domain)
 const baseURL = process.env.REACT_APP_API_URL || 'https://notes-generating-app-2.onrender.com/api';
 
+
 const API = axios.create({
   baseURL,
   headers: { 'Content-Type': 'application/json' },
