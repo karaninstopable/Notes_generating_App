@@ -3,7 +3,7 @@ import axios from 'axios';
 // Locally: uses REACT_APP_API_URL from .env
 // On Render: uses REACT_APP_API_URL set in Render environment variables
 // Fallback: uses relative /api (works if frontend & backend are on same domain)
-const baseURL = process.env.REACT_APP_API_URL || 'http://localhost:5000/api';
+const baseURL = process.env.REACT_APP_API_URL || 'https://notes-generating-app-2.onrender.com/api';
 
 const API = axios.create({
   baseURL,
