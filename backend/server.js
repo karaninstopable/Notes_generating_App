@@ -11,82 +11,52 @@ const userRoutes = require('./routes/users');
 
 const app = express();
 
-// ─── CORS ────────────────────────────────────────────────────────────────────
-const allowedOrigins = [
-  'http://localhost:3000',
-  'http://localhost:3001',
-  process.env.CLIENT_URL,
-].filter(Boolean);
-
+// Middleware
 app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (Postman, mobile, curl)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      console.warn(`CORS blocked request from: ${origin}`);
-      callback(null, true); // permissive — change to new Error() to strictly block
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  origin: process.env.CLIENT_URL || 'http://localhost:3000',
+  credentials: true
 }));
-
-// Handle preflight for all routes
-app.options('*', cors());
-
-// ─── MIDDLEWARE ───────────────────────────────────────────────────────────────
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// ─── ROOT & HEALTH ────────────────────────────────────────────────────────────
+// Routes
+
+// Root route (must be before error handling)
 app.get('/', (req, res) => {
   res.json({ success: true, message: 'Welcome to Notes App API' });
 });
 
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    message: 'Notes App API is running',
-    port: process.env.PORT || 5000,
-    env: process.env.NODE_ENV || 'development',
-  });
-});
-
-// ─── ROUTES ───────────────────────────────────────────────────────────────────
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/users', userRoutes);
 
-// ─── ERROR HANDLER ────────────────────────────────────────────────────────────
+// Health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Notes App API is running' });
+});
+
+
+// Error handling middleware
 app.use((err, req, res, next) => {
-  console.error('❌ Error:', err.stack);
+  console.error(err.stack);
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || 'Internal Server Error',
+    message: err.message || 'Internal Server Error'
   });
 });
 
-// ─── 404 ──────────────────────────────────────────────────────────────────────
+// 404 handler
 app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route not found: ${req.method} ${req.originalUrl}`,
-  });
+  res.status(404).json({ success: false, message: 'Route not found' });
 });
 
-// ─── START ────────────────────────────────────────────────────────────────────
+// Connect to MongoDB and start server
 const PORT = process.env.PORT || 5000;
 
-mongoose
-  .connect(process.env.MONGO_URI)
+mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log('✅ MongoDB connected successfully');
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
-      console.log(`📡 API available at http://localhost:${PORT}/api`);
+      console.log(`🚀 Server running on port ${PORT}`);
     });
   })
   .catch((err) => {
