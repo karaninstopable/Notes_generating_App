@@ -19,6 +19,12 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
+
+// Root route (must be before error handling)
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Welcome to Notes App API' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/notes', noteRoutes);
 app.use('/api/users', userRoutes);
@@ -28,10 +34,6 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Notes App API is running' });
 });
 
-// Root route (must be before error handling)
-app.get('/', (req, res) => {
-  res.json({ success: true, message: 'Welcome to Notes App API' });
-});
 
 // Error handling middleware
 app.use((err, req, res, next) => {
