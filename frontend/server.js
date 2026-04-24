@@ -27,7 +27,10 @@ app.use('/api/users', userRoutes);
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'Notes App API is running' });
 });
-
+// Root route
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Welcome to Notes App API' });
+});
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -36,10 +39,7 @@ app.use((err, req, res, next) => {
     message: err.message || 'Internal Server Error'
   });
 });
-// Root route
-app.get('/', (req, res) => {
-  res.json({ success: true, message: 'Welcome to Notes App API' });
-});
+
 
 // 404 handler
 app.use((req, res) => {
