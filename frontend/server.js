@@ -36,6 +36,10 @@ app.use((err, req, res, next) => {
     message: err.message || 'Internal Server Error'
   });
 });
+// Root route
+app.get('/', (req, res) => {
+  res.json({ success: true, message: 'Welcome to Notes App API' });
+});
 
 // 404 handler
 app.use((req, res) => {

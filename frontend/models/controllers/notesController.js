@@ -1,4 +1,4 @@
-const Note = require('../models/Note');
+const Note = require('../Note');
 
 // @desc    Get notes (user's own, admin gets all)
 // @route   GET /api/notes
